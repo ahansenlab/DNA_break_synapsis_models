@@ -7,9 +7,6 @@
 import subprocess
 import os
 import sys
-#ResultFolderName = "PsiblastRepresentatives_aligned"
-#with open("DGR_result_cluster_checked_combined", "r") as f:
-#    lines = f.readlines()
 
 output_folder = sys.argv[1]
 FileName_list = [filename for filename in os.listdir(output_folder) if filename.startswith("LEFcount") and filename.endswith("bed")]
