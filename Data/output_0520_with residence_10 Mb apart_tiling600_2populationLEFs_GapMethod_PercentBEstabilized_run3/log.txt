@@ -1,0 +1,10 @@
+Tiling factor: 
+600
+number of breaks within a 200kb TADs: 
+52
+number of breaks within a 400kb TADs: 
+40
+number of breaks within a 800kb TADs: 
+45
+number of breaks within a 1200kb TADs: 
+79
