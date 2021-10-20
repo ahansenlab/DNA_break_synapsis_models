@@ -1,5 +1,5 @@
 # DNA_break_synapsis_models
-This repository contains source code for the article investigating the role of loop extrusion in DNA double-strand break end synapsis. We will describe how to run 1D simulation with different parameter combinations and generate in silico ChIP-seq metaplots and Hi-C contact maps. 
+This repository contains source code for the article titled _DNA double-strand break end synapsis by DNA loop extrusion_, investigating the role of loop extrusion in DNA double-strand break end synapsis. We will describe how to run 1D simulation with different parameter combinations and generate in silico ChIP-seq metaplots and Hi-C contact maps. 
 
 The jupyter notebooks titled with `_analysis` suffix are for analyzing simulation data.
 
