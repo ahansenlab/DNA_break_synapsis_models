@@ -5,6 +5,42 @@ The jupyter notebooks titled with `_analysis` suffix are for analyzing simulatio
 
 The `Mathematica Notebooks` folder contains our analytical model to predict synapsis efficiency, the `Data` folder contains the simulation results plotted in the aritcle, and the Figures folder contains output images from the analysis code.
 
+## System requirements
+
+Operating systems should allow running Python. Windows, macOS, and Linux are all supported by Python.
+
+## Installation
+
+Download source code (should only take a minute):
+
+`$ git clone https://github.com/ahansenlab/DNA_break_synapsis_models`
+
+## Installation requirements
+
+### Python dependencies
+Python 2.7/3.3+
+
+The following dependencies should be installed correctly before running the code this package.
+ * numpy (1.6+)
+ * scipy
+ * matplotlib
+ * cython
+ * pandas
+ * seaborn
+ * multiprocess (if using parallel processing)
+
+We recommend using the conda package manager if you have trouble building these Python dependencies:
+
+`$ conda install numpy scipy matplotlib cython ...`
+
+## Demo
+
+The remaining sections provide instructions to run 1D simulations and analyze the simulation results. Default parameters have been defined for running all the simulation and analysis notebooks so that all notebooks could be run directly (only need to provide user-defined folder names).
+
+Sample output data are provided in the `Data` folder, which were used to generate figures in the manuscript, and can be analyzed using the analysis notebooks for reproducing the figures shown in the manuscript.
+
+Most simulations should finish within 24 hours on a "normal" desktop computer.
+
 ## Running 1D simulations
 
 The jupyter notebook `1D_SimulationCode.ipynb` is used for performing 1D simulations of the DNA double-strand break end synapsis by DNA loop extrusion.
