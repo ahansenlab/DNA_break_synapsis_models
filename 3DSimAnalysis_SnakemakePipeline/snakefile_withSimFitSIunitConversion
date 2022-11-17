@@ -1,0 +1,174 @@
+from snakemake.utils import validate
+import pandas as pd
+
+"""
+To run this pipeline one needs a config.yaml file as well as a samples.csv file
+both of which conform to the schemas in the ./schemas/ folder.
+
+To update the samples file, force run the rule:
+snakemake -j1 -r update_samples_file -f
+
+"""
+
+configfile: "config/config.yaml"
+validate(config, schema="schemas/config.schema.yaml")
+samples_df = pd.read_csv(config["simulation_group_file_names"], dtype = str)
+validate(samples_df, schema="schemas/samples.schema.yaml")        
+
+SIMULATION_NAMES = samples_df.file_names.values
+SIMULATION_GROUP = samples_df.group.values
+
+EXPERIMENT_GROUP = config["experiment_group_names"]
+
+rule all:
+    input:
+        fit_result =expand("results/{group}/{group}.experiment.msd_fit.json",group=EXPERIMENT_GROUP),
+        msd_fit_figure = expand("results/{group}/{group}.experiment.msd_fit.pdf",group=EXPERIMENT_GROUP),              
+        sim_msd_fit= expand("results/{group}/{sample}.simulation.msd_fit.json",zip,sample=SIMULATION_NAMES,group=SIMULATION_GROUP),  
+        single_and_two_loci_msd= expand("results/{group}/{sample}.single_and_two_loci_msd.pdf",zip,sample=SIMULATION_NAMES,group=SIMULATION_GROUP),
+        unit_conversion= expand("results/{group}/{sample}.unit_conversion.json",zip,sample=SIMULATION_NAMES,group=SIMULATION_GROUP),  
+        passage_times_v2= expand("results/{group}/{sample}.first_passage_times_v2.pkl",zip,sample=SIMULATION_NAMES,group=SIMULATION_GROUP), 
+        recapture_fig_v2= expand("results/{group}/{sample}.first_recapture_times_v2.pdf",zip,sample=SIMULATION_NAMES,group=SIMULATION_GROUP),
+        recapture_fig_combined_v2= expand("results/{group}/first_recapture_times_combined_v2.pdf",group=SIMULATION_GROUP), 
+        recapture_vs_confinementR_fig_v2= expand("results/{group}/first_recapture_vs_confinementR_v2.pdf",group=SIMULATION_GROUP), 
+        exit_fig_v2= expand("results/{group}/{sample}.first_exit_times_v2.pdf",zip,sample=SIMULATION_NAMES,group=SIMULATION_GROUP),  
+        exit_fig_combined_v2= expand("results/{group}/first_exit_times_combined_v2.pdf",group=SIMULATION_GROUP), 
+        exit_vs_confinementR_fig_v2= expand("results/{group}/first_exit_vs_confinementR_v2.pdf",group=SIMULATION_GROUP), 
+        displacement_fig= expand("results/{group}/{sample}.displacement_per_timestep.pdf",zip,sample=SIMULATION_NAMES,group=SIMULATION_GROUP),  
+               
+rule update_simulation_groups:
+    output:
+        config["simulation_group_file_names"]
+    script:
+        "scripts/find_sample_files.py"         
+               
+        
+def get_sample_path(wildcards):
+    """
+    This helper function returns the full file path for {sample} based on what is in samples_df.
+    """
+    fname = wildcards.sample
+    fpath = samples_df[samples_df.file_names==fname].file_paths.values[0]  # assumes one match 
+    full_path = os.path.join(fpath,fname)
+    return full_path                   
+       
+rule polychrom_to_tracklib:    
+    input:
+        simulation_folder=get_sample_path
+    output:
+        chrom_ends="results/{group}/{sample}.simulation.chrom_ends.csv",
+        terminal_TAD="results/{group}/{sample}.simulation.terminal_TAD.csv",
+        internal_TAD="results/{group}/{sample}.simulation.internal_TAD.csv",
+        figure="results/{group}/{sample}.simulation.MSD_figure.pdf"
+    script:
+        "scripts/make_tagged_sets.py"
+
+        
+rule fit_real_data_MSD:    
+    input: 
+        SIMULATION_NAMES,
+        tagged_set = lambda wildcards: [config["experiment_tagged_sets"][tag] for tag \
+                                        in config["experiment_group_names"][wildcards.group]]
+        
+    output:
+        fit_result = "results/{group}/{group}.experiment.msd_fit.json",
+        figure = "results/{group}/{group}.experiment.msd_fit.pdf" 
+    script:  
+        "scripts/fit_MSD_experiment.py"     
+        
+        
+rule fit_simulation_data_MSD:    
+    input: 
+        "results/{group}/{sample}.simulation.internal_TAD.csv",
+    output:
+        "results/{group}/{sample}.simulation.internal_tad.msd_fit.pdf",
+        "results/{group}/{sample}.simulation.msd_fit.json",        
+    script:  
+        "scripts/fit_MSD_simulation.py"    
+        
+rule plot_single_and_two_loci_msd:    
+    input: 
+        "results/{group}/{sample}.simulation.chrom_ends.csv",
+    output:
+        "results/{group}/{sample}.single_and_two_loci_msd.pdf",        
+    script:  
+        "scripts/plot_single_and_two_loci_msd.py"  
+
+        
+rule calibrate_simulated_to_real_units:
+    input:
+        "results/{group}/{sample}.simulation.chrom_ends.csv",
+        expt_fit="results/{group}/{group}.experiment.msd_fit.json",
+        sim_fit="results/{group}/{sample}.simulation.msd_fit.json",
+    output:
+        units_file="results/{group}/{sample}.unit_conversion.json"
+    script:
+        "scripts/calibrate_simulation_units_to_SI_units.py"
+        
+        
+rule compute_first_passage_times_v2:
+    input:
+        units_file="results/{group}/{sample}.unit_conversion.json",
+        simulation_folder=get_sample_path,
+        monomer_displacement_per_timestep="results/{group}/{sample}.monomer_displacement_per_timestep.pkl",
+    output:
+        first_passage_times_v2="results/{group}/{sample}.first_passage_times_v2.pkl",
+        DSB_ends_traces=report("results/{group}/{sample}.DSB_ends_traces.pdf",category="3D traces"),
+        DSB_ends_traces_preDSB=report("results/{group}/{sample}.DSB_ends_traces_preDSB.pdf",category="3D traces")
+    script:
+        "scripts/compute_first_passage_times_v4c.py"
+    
+    
+rule plot_first_passage_times_v2:
+    input:
+        units_file="results/{group}/{sample}.unit_conversion.json",
+        first_passage_times_v2="results/{group}/{sample}.first_passage_times_v2.pkl",
+    output:
+        first_recapture_v2=report("results/{group}/{sample}.first_recapture_times_v2.pdf",category="First Passage Times"),
+
+        first_exit_v2=report("results/{group}/{sample}.first_exit_times_v2.pdf",category="First Exit times")
+        
+    script:
+        "scripts/plot_first_passage_times_v2.py"
+        
+rule plot_first_passage_times_combined_v2:
+    input:
+        units_file=expand("results/{group}/{sample}.unit_conversion.json",zip,sample=SIMULATION_NAMES,group=SIMULATION_GROUP), 
+        first_passage_times_v2=expand("results/{group}/{sample}.first_passage_times_v2.pkl",zip,sample=SIMULATION_NAMES,group=SIMULATION_GROUP),
+        recapture_times_1D = "results/ΔRAD21/recapture_time_1D.pkl",
+        monomer_displacement_per_timestep=expand("results/{group}/{sample}.monomer_displacement_per_timestep.pkl",zip,sample=SIMULATION_NAMES,group=SIMULATION_GROUP),
+    output:
+        first_recapture_combined_v2=report("results/{group}/first_recapture_times_combined_v2.pdf",category="First Passage Times"),
+        first_exit_combined_v2=report("results/{group}/first_exit_times_combined_v2.pdf",category="First Exit times"),
+        first_recapture_vs_confinementR_v2=report("results/{group}/first_recapture_vs_confinementR_v2.pdf",category="First Passage Times"),
+        first_exit_vs_confinementR_v2=report("results/{group}/first_exit_vs_confinementR_v2.pdf",category="First Exit times")
+    script:
+        "scripts/plot_first_passage_times_combined_v5.py"
+        
+rule compute_monomer_displacement_per_timestep:
+    input:
+        simulation_folder=get_sample_path,
+    output:
+        monomer_displacement_per_timestep="results/{group}/{sample}.monomer_displacement_per_timestep.pkl"
+    script:
+        "scripts/compute_monomer_displacement_per_timestep.py"
+
+rule plot_monomer_displacement_per_timestep:
+    input:
+        units_file="results/{group}/{sample}.unit_conversion.json",
+        monomer_displacement_per_timestep="results/{group}/{sample}.monomer_displacement_per_timestep.pkl"
+    output:
+        displacement_per_timestep_distribution=report("results/{group}/{sample}.displacement_per_timestep.pdf",category="Displacement Per Timestep"),
+    script:
+        "scripts/plot_displacement_per_timestep.py"
+        
+                
+ 
+
+
+      
+
+    
+    
+            
+       

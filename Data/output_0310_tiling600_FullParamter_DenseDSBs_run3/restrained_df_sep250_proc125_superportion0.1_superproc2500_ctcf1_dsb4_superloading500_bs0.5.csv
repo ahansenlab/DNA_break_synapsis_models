@@ -1,0 +1,4 @@
+,separations,processivity,boundary strength,threshold,restrained proportion time0,restrained proportion realtime,successful repair count,repaired proportion,initial restrained 200kb count,initial restrained 400kb count,initial restrained 800kb count,initial restrained 1200kb count,realtime restrained 200kb count,realtime restrained 400kb count,realtime restrained 800kb count,realtime restrained 1200kb count,repaired 200kb count,repaired 400kb count,repaired 800kb count,repaired 1200kb count,average extruded length,portion_BE_occupied_by_LEF,portion_TADs_with_stabilized_LEFs
+0,250,125,0.5,1,0.5576036866359447,0.09216589861751152,20,0.09216589861751152,28,25,28,40,4,4,4,8,4,4,4,8,648.4287899470982,19.5,0
+1,250,125,0.5,3,0.5576036866359447,0.09216589861751152,20,0.09216589861751152,28,25,28,40,4,4,4,8,4,4,4,8,648.4287899470982,19.5,0
+2,250,125,0.5,5,0.5576036866359447,0.09216589861751152,22,0.10138248847926268,28,25,28,40,4,4,4,8,4,5,4,9,648.4287899470982,19.5,0

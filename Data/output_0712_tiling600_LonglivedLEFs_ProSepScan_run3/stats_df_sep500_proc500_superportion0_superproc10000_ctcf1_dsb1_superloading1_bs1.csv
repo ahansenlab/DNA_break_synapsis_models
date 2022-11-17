@@ -1,0 +1,5 @@
+,separations,processivity,boundary_strength,TAD_size,threshold,first_passage_time,subTAD_LEFs_num,dist_to_neighbor_DSB,dist_to_CTCF
+0,500,500,1,1200,5,403,9,19896,248
+1,500,500,1,1200,3,405,8,19896,248
+2,500,500,1,1200,1,409,8,19896,248
+3,500,500,1,800,5,576,3,20223,703

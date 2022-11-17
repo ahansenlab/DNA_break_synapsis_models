@@ -1,0 +1,61 @@
+
+simulation_folder: "../Data/"
+simulation_group_file_names: "config/simulation_samples.csv"
+
+# it is important that sample_groups names match those of experiment_sample_groups
+# so that these can later be used to compare/calibrate sample_groups which
+# come from the simulation data
+simulation_group_names:
+  ΔRAD21:
+      - 'Seven_chromosome_sims'
+  RAD21:
+      - 'DSB_sims'
+
+# The experiment_sample_groups combine the keys from experiment_tagged_sets 
+# so that these can later be used to compare/calibrate the sample_groups that
+# come from the simulation data
+experiment_group_names:
+  ΔRAD21:
+      - 'RAD21_2_hr'
+  RAD21:
+      - 'C36' 
+      
+# samples list: key word search keys used to build the simulation_samples.csv file
+# The top level keys included here should also be used in sample_groups
+simulation_group_keywords:
+  Seven_chromosome_sims:
+    name_includes:
+       - 'multichain'
+       - 'brokenloop'
+       - 'DSB'
+    name_excludes:
+       - '2022_02_02'
+       - 'V3'
+       - 'V4'
+       
+      
+# Locations of the experimental tagged sets (experimental chromosome trajectories)     
+experiment_tagged_sets:
+    RAD21_0_hr: "data/Rad21_0_hr.tagged_set.tsv"
+    RAD21_2_hr: "data/Rad21_2_hr.tagged_set.tsv"
+    RAD21_4_hr: "data/Rad21_4_hr.tagged_set.tsv"
+    CTCF_0_hr: "data/CTCF_0_hr.tagged_set.tsv"
+    CTCF_2_hr: "data/CTCF_2_hr.tagged_set.tsv"
+    CTCF_4_hr: "data/CTCF_4_hr.tagged_set.tsv"
+    C36: "data/C36.tagged_set.tsv"
+
+
+DSB_simulation_parameters:
+  Fbn2_tad_length: 515 # length in monomers (or 515 kb), including tether
+  experiment_time_per_sample_in_sec: 20 # seconds
+  experiment_spatial_units_in_nanometers: 1000 # nm (measurements in tagged_sets are in microns)
+  basepairs_per_monomer: 1000 # bp
+  chain_length: 10000 
+  num_chromosomes: 7
+  locs_per_chrom: 5 # number of sample positions used per chromosome
+  initial_URIs_skipped: 9600000 # sample every X simulation blocks, 13380000 URIs used for C7(N10000) to get 126 synapsis events
+  last_URIs_used: 5000000 # length of trajectories for making tagged sets and fit_simulation_data_MS
+  last_URIs_used_for_synapsis: 13380000 # length of trajectories for making tagged sets and fit_simulation_data_MS
+  skip_every_X_URIs: 1000 # skip the initial X simulation URIs   
+  contact_radii_for_first_passage_times: [3,4,5]
+  
