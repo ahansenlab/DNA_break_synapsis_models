@@ -137,12 +137,8 @@ for i, (units_file_name, first_passage_times_file) in enumerate(zip(snakemake.in
     if i == 0:
         fig1 = plt.figure(figsize=(12,5*len(R)))
         ax_set1 =  fig1.subplots(len(R), 2)
-        fig2 = plt.figure(figsize=(12,5*len(R)))
-        ax_set2 =  fig2.subplots(len(R), 2) 
         fig3 = plt.figure(figsize=(12,5*len(R)))
         ax_set3 =  fig3.subplots(len(R), 2)
-        fig4 = plt.figure(figsize=(12,5*len(R)))
-        ax_set4 =  fig4.subplots(len(R), 2)
         fig5 = plt.figure(figsize=(12,5*len(R)))
         ax_set5 =  fig5.subplots(len(R), 2)
         fig6 = plt.figure(figsize=(12,5*len(R)))
@@ -450,155 +446,25 @@ for ri, r in enumerate(with_contact_intervals.keys()):
             ax_set6[ri,1].set_xlabel('Confinement radius (nm)')
             ax_set6[ri,1].set_ylabel('Mean time to recapture (minutes)')
             ax_set6[ri,1].set_title('Capture radius = '+ str(np.around(r,decimals=1))+ ' monomer')
-        
-    if i == len(snakemake.input.units_file)-1:
 
-        for Ri, R in enumerate(no_contact_intervals.keys()):  
-            if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_file:
-                legend_text = ['%synapsis = '+str(np.around(inner_recapture_count_global[Ri]/DSB_num_global[Ri]*100,2))+', %constrained = '+str(np.around(constrained_global[Ri]/DSB_num_global[Ri]*100,2))+', # of DSB = '+str(int(DSB_num_global[Ri]))]
-                legend_text2 = ['%synapsis = '+str(np.around(inner_recapture_count_global_constrained[Ri]/DSB_num_global_constrained[Ri]*100,2))+', # of constrained DSB = '+str(int(DSB_num_global_constrained[Ri]))]
-                
-                legend_text2.append('%synapsis = '+str(np.around(inner_recapture_count_global_unconstrained[Ri]/DSB_num_global_unconstrained[Ri]*100,2))+', # of unconstrained DSB = '+str(int(DSB_num_global_unconstrained[Ri])))
-                ax_set5[Ri,1].legend(legend_text2,loc='lower right',framealpha=0.2)
-                ax_set6[Ri,1].legend(legend_text2,loc='lower right',framealpha=0.2)
-                
-            else:
-                legend_text = ['n = '+str(inner_recapture_count_global[Ri]) +', %synapsis = '+str(np.around(fraction_inner_chrom_num_recapture[i][Ri],2))+', # of DSB = '+str(int(inner_encountered_separated_count[r]))]
-            ax_set1[Ri,1].legend(legend_text,loc='lower right',framealpha=0.2)
-            ax_set3[Ri,1].legend(legend_text,loc='lower right',framealpha=0.2)
+                 
             
-                
+for ri, r in enumerate(with_contact_intervals.keys()): 
+    if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_file:
+        legend_text = ['%synapsis = '+str(np.around(inner_recapture_count_global[ri]/DSB_num_global[ri]*100,2))+', %constrained = '+str(np.around(constrained_global[ri]/DSB_num_global[ri]*100,2))+', # of DSB = '+str(int(DSB_num_global[ri]))]
+        legend_text2 = ['%synapsis = '+str(np.around(inner_recapture_count_global_constrained[ri]/DSB_num_global_constrained[ri]*100,2))+', # of constrained DSB = '+str(int(DSB_num_global_constrained[ri]))]
 
-    if "frozenloop_sim" in first_passage_times_file:
-        min_len = 0
-        list_to_plot = np.asarray([j for j in exit_times_3D_constrained[ri] if j>min_len])
-        scaling_factor = 1
-        x, y, l, u = edf(np.asarray(list_to_plot), alpha=0.05, scaling_factor = scaling_factor)
-        ax_set2[ri,0].fill_between(x, l, u, facecolor = 'darkviolet',alpha=0.5)
-        ax_set2[ri,0].plot(x, y, '-',color = 'darkviolet')
-        if len(exit_times_3D_unconstrained[ri])>0:
-            list2_to_plot = np.asarray([j for j in exit_times_3D_unconstrained[ri] if j>min_len])
-            scaling_factor = inner_recapture_count_global_unconstrained[ri]/DSB_num_global_unconstrained[ri]
-            x, y, l, u = edf(np.asarray(list2_to_plot), alpha=0.05, scaling_factor = scaling_factor)
-            ax_set2[ri,0].fill_between(x, l, u, facecolor = 'forestgreen',alpha=0.5)
-            ax_set2[ri,0].plot(x, y, '-',color = 'forestgreen')
-        ax_set2[ri,0].set_xscale('log')
-        ax_set2[ri,0].set_xlabel('Time to exit (sim time step)')
-        ax_set2[ri,0].set_ylabel('Density')
-        ax_set2[ri,0].set_title('Capture radius = '+ str(np.around(r,decimals=1))+ ' monomer')
-        ax_set2[ri,0].set_ylim([0,1.05])
+        legend_text2.append('%synapsis = '+str(np.around(inner_recapture_count_global_unconstrained[ri]/DSB_num_global_unconstrained[ri]*100,2))+', # of unconstrained DSB = '+str(int(DSB_num_global_unconstrained[ri])))
+        ax_set5[ri,1].legend(legend_text2,loc='lower right',framealpha=0.2)
+        ax_set6[ri,1].legend(legend_text2,loc='lower right',framealpha=0.2)
 
-        # convert to SI units
-        list_to_plot = np.asarray([j*dt_min for j in exit_times_3D_constrained[ri] if j>min_len])
-        scaling_factor = 1
-        x, y, l, u = edf(np.asarray(list_to_plot), alpha=0.05, scaling_factor = scaling_factor)
-        ax_set2[ri,1].fill_between(x, l, u, facecolor = 'darkviolet',alpha=0.5)
-        ax_set2[ri,1].plot(x, y, '-',color = 'darkviolet')
-        if len(exit_times_3D_unconstrained[ri])>0:
-            list2_to_plot = np.asarray([j*dt_min for j in exit_times_3D_unconstrained[ri] if j>min_len])
-            scaling_factor = inner_recapture_count_global_unconstrained[ri]/DSB_num_global_unconstrained[ri]
-            x, y, l, u = edf(np.asarray(list2_to_plot), alpha=0.05, scaling_factor = scaling_factor)
-            ax_set2[ri,1].fill_between(x, l, u, facecolor = 'forestgreen',alpha=0.5)
-            ax_set2[ri,1].plot(x, y, '-',color = 'forestgreen')
-        ax_set2[ri,1].set_xscale('log')
-        ax_set2[ri,1].set_xlabel('Time to exit (sim time step)')
-        ax_set2[ri,1].set_title('Capture radius = '+ str(np.around(r,decimals=1))+ ' monomer')
-        ax_set2[ri,1].set_ylim([0,1.05])
-        
-        all_intervals = np.asarray(exit_times_3D_constrained[ri])
-
-        censored = np.concatenate((np.zeros(len(exit_times_3D_constrained[ri]))),axis=None)
-
-        KM_survival_curve = KM_survival(all_intervals,censored,conf=0.95, Tmax=np.inf, S1at=1/dt_min)#calculating KM survival curve
-        if 0.5 in KM_survival_curve[:,1]:
-            median_idx = np.argwhere(KM_survival_curve[:,1]==0.5)[0][0]
-            median = KM_survival_curve[median_idx,0]
-        else:
-            a= np.argwhere(KM_survival_curve[:,1]-0.5<0)
-            median_idx = np.argwhere(KM_survival_curve[:,1]-0.5<0)[0][0]
-            median = (KM_survival_curve[median_idx,0]+KM_survival_curve[median_idx-1,0])/2
-
-        if 0.5 in KM_survival_curve[:,2]:
-            median_lbnd_idx = np.argwhere(KM_survival_curve[:,2]==0.5)[0][0]
-            median_lbnd = KM_survival_curve[median_lbnd_idx,0]
-        else:
-            median_lbnd_idx = np.argwhere(KM_survival_curve[:,2]-0.5<0)[0][0]
-            median_lbnd = (KM_survival_curve[median_lbnd_idx,0]+KM_survival_curve[median_lbnd_idx-1,0])/2
-
-        if 0.5 in KM_survival_curve[:,3]:
-            median_ubnd_idx = np.argwhere(KM_survival_curve[:,3]==0.5)[0][0]
-            median_ubnd = KM_survival_curve[median_ubnd_idx,0]
-        else:
-            median_ubnd_idx = np.argwhere(KM_survival_curve[:,3]-0.5<0)[0][0]
-            median_ubnd = (KM_survival_curve[median_ubnd_idx,0]+KM_survival_curve[median_ubnd_idx-1,0])/2
-
-        mean,mean_lbnd,mean_ubnd = MLE_censored_exponential(all_intervals,censored,conf=0.95)
-    #     mean, mean_lbnd, mean_ubnd = (0,0,0)
-
-
-        ax_set4[ri,0].errorbar(radius,mean,yerr=[np.asarray([np.abs(mean_lbnd-mean)]),np.asarray([np.abs(mean_ubnd-mean)])],fmt='o', capthick=2, color = 'darkviolet')
-        ax_set4[ri,0].set_xlabel('Confinement radius (nm)')
-        ax_set4[ri,0].set_ylabel('Mean time to exit (sim time step)')
-        ax_set4[ri,0].set_title('Capture radius = '+ str(np.around(r,decimals=1))+ ' monomer')
-
-
-        ax_set4[ri,1].errorbar(radius,mean*dt_min,yerr=[np.asarray([np.abs(mean_lbnd-mean)*dt_min]),np.asarray([np.abs(mean_ubnd-mean)*dt_min])],fmt='o', capthick=2, color = 'darkviolet')
-        ax_set4[ri,1].set_xlabel('Confinement radius (nm)')
-        ax_set4[ri,1].set_ylabel('Mean time to exit (minutes)')
-        ax_set4[ri,1].set_title('Capture radius = '+ str(np.around(r,decimals=1))+ ' monomer')
-        
-        if len(exit_times_3D_unconstrained[ri])>0:
-            all_intervals = np.asarray(exit_times_3D_unconstrained[ri])
-
-            censored = np.concatenate((np.zeros(len(exit_times_3D_unconstrained[ri]))),axis=None)
-
-            KM_survival_curve = KM_survival(all_intervals,censored,conf=0.95, Tmax=np.inf, S1at=1/dt_min)#calculating KM survival curve
-            if 0.5 in KM_survival_curve[:,1]:
-                median_idx = np.argwhere(KM_survival_curve[:,1]==0.5)[0][0]
-                median = KM_survival_curve[median_idx,0]
-            else:
-                a= np.argwhere(KM_survival_curve[:,1]-0.5<0)
-                median_idx = np.argwhere(KM_survival_curve[:,1]-0.5<0)[0][0]
-                median = (KM_survival_curve[median_idx,0]+KM_survival_curve[median_idx-1,0])/2
-
-            if 0.5 in KM_survival_curve[:,2]:
-                median_lbnd_idx = np.argwhere(KM_survival_curve[:,2]==0.5)[0][0]
-                median_lbnd = KM_survival_curve[median_lbnd_idx,0]
-            else:
-                median_lbnd_idx = np.argwhere(KM_survival_curve[:,2]-0.5<0)[0][0]
-                median_lbnd = (KM_survival_curve[median_lbnd_idx,0]+KM_survival_curve[median_lbnd_idx-1,0])/2
-
-            if 0.5 in KM_survival_curve[:,3]:
-                median_ubnd_idx = np.argwhere(KM_survival_curve[:,3]==0.5)[0][0]
-                median_ubnd = KM_survival_curve[median_ubnd_idx,0]
-            else:
-                median_ubnd_idx = np.argwhere(KM_survival_curve[:,3]-0.5<0)[0][0]
-                median_ubnd = (KM_survival_curve[median_ubnd_idx,0]+KM_survival_curve[median_ubnd_idx-1,0])/2
-
-            mean,mean_lbnd,mean_ubnd = MLE_censored_exponential(all_intervals,censored,conf=0.95)
-        #     mean, mean_lbnd, mean_ubnd = (0,0,0)
-
-
-            ax_set4[ri,0].errorbar(radius,mean,yerr=[np.asarray([np.abs(mean_lbnd-mean)]),np.asarray([np.abs(mean_ubnd-mean)])],fmt='o', capthick=2, color = 'forestgreen')
-            ax_set4[ri,0].set_xlabel('Confinement radius (nm)')
-            ax_set4[ri,0].set_ylabel('Mean time to exit (sim time step)')
-            ax_set4[ri,0].set_title('Capture radius = '+ str(np.around(r,decimals=1))+ ' monomer')
-
-
-            ax_set4[ri,1].errorbar(radius,mean*dt_min,yerr=[np.asarray([np.abs(mean_lbnd-mean)*dt_min]),np.asarray([np.abs(mean_ubnd-mean)*dt_min])],fmt='o', capthick=2, color = 'forestgreen')
-            ax_set4[ri,1].set_xlabel('Confinement radius (nm)')
-            ax_set4[ri,1].set_ylabel('Mean time to exit (minutes)')
-            ax_set4[ri,1].set_title('Capture radius = '+ str(np.around(r,decimals=1))+ ' monomer')
-
-    if i == len(snakemake.input.units_file)-1:
-
-        for ri, r in enumerate(with_contact_intervals.keys()):  
-            legend_text = ['# of exits = '+ str(len( exit_times_3D_constrained[ri]))+', # of unconstrained exits = '+str(len( exit_times_3D_unconstrained[ri]))]
-            ax_set2[ri,0].legend(legend_text,loc='lower right',framealpha=0.2)
-            ax_set4[ri,0].legend(legend_text,loc='lower right',framealpha=0.2)
-            ax_set2[ri,1].legend(legend_text,loc='lower right',framealpha=0.2)
-            ax_set4[ri,1].legend(legend_text,loc='lower right',framealpha=0.2)
-
+    else:
+        legend_text = ['n = '+str(inner_recapture_count_global[ri]) +', %synapsis = '+str(np.around(inner_recapture_count_global[ri]/inner_encountered_separated_count[r]*100,2))+', # of DSB = '+str(int(inner_encountered_separated_count[r]))]
+    ax_set1[ri,1].legend(legend_text,loc='lower right',framealpha=0.2)
+    ax_set3[ri,1].legend(legend_text,loc='lower right',framealpha=0.2)
+   
+    
+    
 recapture_times_3D_radius3 = np.asarray([j*dt_min for j in recapture_times_3D[0]])
 uncapture_times_3D_radius3 = np.asarray([j*dt_min for j in uncapture_times_3D[0]])
 
@@ -625,9 +491,16 @@ if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_
     
 file = snakemake.output.first_recapture_times
 with open(file, 'wb') as g:
+    if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_file:
+        np.save(g, DSB_num_global[1])
+    else:
+        np.save(g, inner_encountered_separated_count[4])
+        print(inner_encountered_separated_count[4])
     np.save(g, recapture_times_3D_radius4)#capture radius 4
     if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_file:
+        np.save(g, DSB_num_global_constrained[1])
         np.save(g, recapture_times_3D_constrained_radius4)#capture radius 4
+        np.save(g, DSB_num_global_unconstrained[1])
         np.save(g, recapture_times_3D_unconstrained_radius4)#capture radius 4
     np.save(g, uncapture_times_3D_radius4)#capture radius 4
     if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_file:
@@ -636,9 +509,16 @@ with open(file, 'wb') as g:
         
 file = snakemake.output.first_recapture_times_radius3
 with open(file, 'wb') as g:
+    if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_file:
+        np.save(g, DSB_num_global[0])
+    else:
+        np.save(g, inner_encountered_separated_count[3])
+        print(inner_encountered_separated_count[3])
     np.save(g, recapture_times_3D_radius3)#capture radius 3
     if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_file:
+        np.save(g, DSB_num_global_constrained[0])
         np.save(g, recapture_times_3D_constrained_radius3)#capture radius 3
+        np.save(g, DSB_num_global_unconstrained[0])
         np.save(g, recapture_times_3D_unconstrained_radius3)#capture radius 3
     np.save(g, uncapture_times_3D_radius3)#capture radius 3
     if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_file:
@@ -647,9 +527,16 @@ with open(file, 'wb') as g:
         
 file = snakemake.output.first_recapture_times_radius5
 with open(file, 'wb') as g:
+    if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_file:
+        np.save(g, DSB_num_global[2])
+    else:
+        np.save(g, inner_encountered_separated_count[5])
+        print(inner_encountered_separated_count[5])
     np.save(g, recapture_times_3D_radius5)#capture radius 5
     if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_file:
+        np.save(g, DSB_num_global_constrained[2])
         np.save(g, recapture_times_3D_constrained_radius5)#capture radius 5
+        np.save(g, DSB_num_global_unconstrained[2])
         np.save(g, recapture_times_3D_unconstrained_radius5)#capture radius 5
     np.save(g, uncapture_times_3D_radius5)#capture radius 5
     if "DSB_sim" in first_passage_times_file or "frozenloop" in first_passage_times_file:
@@ -658,8 +545,6 @@ with open(file, 'wb') as g:
 
 
 fig1.savefig(snakemake.output.first_recapture_combined_v2,bbox_inches='tight')
-fig2.savefig(snakemake.output.first_exit_combined_v2,bbox_inches='tight')
 fig3.savefig(snakemake.output.first_recapture_vs_confinementR_v2,bbox_inches='tight')
-fig4.savefig(snakemake.output.first_exit_vs_confinementR_v2,bbox_inches='tight')
 fig6.savefig(snakemake.output.first_recapture_vs_confinementR_conditioned_v2,bbox_inches='tight')
 fig5.savefig(snakemake.output.first_recapture_combined_conditioned_v2,bbox_inches='tight')
