@@ -29,7 +29,7 @@ if 'multichain_sim' in snakemake.input[0] and '_C1_'in snakemake.input[0]:
     dt[tag] = dt_sim
     dx[tag] = dx_sim
 else:
-    calibration_units_file_dict ={70000:'multichain_sim_dens0.2_N70000_C1_collisionrate_1_trunc50_stepsperblock30.unit_conversion.json'}
+    calibration_units_file_dict ={70000:'unit_conversion.json'}
     if 'multichain_sim' in snakemake.input[0]:
         num_monomers = int(snakemake.input[0].split('_N')[1].split('_C')[0])
     elif 'DSB_sim' or 'frozenloop_stochasticConstrainingLEF' in snakemake.input[0]:
