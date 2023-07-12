@@ -267,6 +267,10 @@ cdef class LEFTranslocatorDirectional(object):
     def updateStallprob(self, stallProbLeft, stallProbRight):
         self.stallLeft = stallProbLeft
         self.stallRight = stallProbRight
+
+    def updateFalloffProb(self, falloffProb, falloffProbSuper):
+        self.falloff = falloffProb
+        self.longlivedfalloff = falloffProbSuper
         
     def updateDSBFlag(self, DSB_Flag):
         self.DSBFlag = DSB_Flag
